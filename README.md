@@ -70,4 +70,3 @@ Run `terraform init -upgrade` and `terraform apply`.
 ### Examples
 
 - [examples/simple](examples/simple/)
-
