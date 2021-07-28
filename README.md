@@ -3,11 +3,11 @@
 
 # Hybrid nodes deployment on Equinix Platform
 
-This Terraform script provides Hybrid nodes deployment on Equinix Metal platform where one node is deployed as the front-end node in layer-3/layer-2 Hybrid bonded mode and the reset of the nodes are deployed as the backend nodes in layer-2 bonded mode.
+This Terraform script provides hybrid nodes deployments on Equinix Metal platform where one node is deployed as the front-end node in layer-3/layer-2 Hybrid bonded mode and the reset of the nodes are deployed as the backend nodes in layer-2 bonded mode.
 
-For information regarding Layer-3/2 Hybrid bonded mode, please see the following document - https://metal.equinix.com/developers/docs/layer2-networking/hybrid-bonded-mode/. For the Layer-2 Bonded mode, please see the following Equinix Metal document - https://metal.equinix.com/developers/docs/layer2-networking/layer2-mode/#pure-layer-2-modes
+For information regarding Layer-3/2 hybrid bonded mode, please see the following document - https://metal.equinix.com/developers/docs/layer2-networking/hybrid-bonded-mode/. For the Layer-2 bonded mode, please see the following Equinix Metal document - https://metal.equinix.com/developers/docs/layer2-networking/layer2-mode/#pure-layer-2-modes
 
-The front node can access the internet directly while the backend nodes can only access the internet via frontend. There are two VLANs in this configuration. The first VLAN is shared by the frontend and the backend nodes while the second VLAN is only shared by the backend nodes.
+The frontend node can access the internet directly while the backend nodes can only access the internet via frontend. There are two VLANs in this configuration. The first VLAN is shared by the frontend and the backend nodes while the second VLAN is only shared by the backend nodes.
 The first VLAN is hardcoded using 192.168.100.0/24 for IP assignments with frontend being assigned with 192.168.100.1. The second VLAN is hardcoded using 169.254.254.0/24 for IP assigments among the backend nodes.
 
 After the nodes are sucessfully deployed, the following behaviors are expected:
