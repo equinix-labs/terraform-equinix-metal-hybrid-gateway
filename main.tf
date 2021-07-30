@@ -23,7 +23,7 @@ resource "metal_vlan" "metro_vlan" {
 }
 
 module "frontend" {
-  source           = "./frontend-mod/"
+  source           = "./modules/frontend/"
   project_id       = var.project_id
   plan             = var.plan
   metro            = var.metro
@@ -34,7 +34,7 @@ module "frontend" {
 }
 
 module "backend" {
-  source           = "./backend-mod/"
+  source           = "./modules/backend/"
   backend_count    = var.backend_count 
   project_id       = var.project_id
   plan             = var.plan
