@@ -50,6 +50,7 @@ Terraform uses modules to deploy infrastructure. In order to initialize the modu
 You will need to set the following variables at a minimum and there are a lot more you may wish to modify in `vars.tf`
 
 ```
+cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
 auth_token = "your Equinx Metal API token"
 project_id = "your Equinix Metal project you want to deploy the nodes to"
