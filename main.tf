@@ -4,14 +4,17 @@
 
 terraform {
   required_providers {
+    null = {
+      source = "hashicorp/null"
+    }
     metal = {
-      source = "equinix/metal"
+      source  = "equinix/metal"
       version = ">= 3.0"
     }
   }
 }
 provider "metal" {
-  auth_token = var.auth_token 
+  auth_token = var.auth_token
 }
 
 ## allocate metro vlans for the project 
@@ -22,6 +25,11 @@ resource "metal_vlan" "metro_vlan" {
   project_id  = var.project_id
 }
 
+module "ssh" {
+  source     = "./modules/ssh/"
+  project_id = var.project_id
+}
+
 module "frontend" {
   source           = "./modules/frontend/"
   project_id       = var.project_id
@@ -30,17 +38,20 @@ module "frontend" {
   operating_system = var.operating_system
   vlan_count       = var.vlan_count
   metal_vlan_f     = metal_vlan.metro_vlan[0].vxlan
+  ssh_key          = module.ssh.ssh_private_key_contents
   depends_on       = [metal_vlan.metro_vlan]
 }
 
 module "backend" {
   source           = "./modules/backend/"
-  backend_count    = var.backend_count 
+  bastion_host     = module.frontend.frontend_IP
+  backend_count    = var.backend_count
   project_id       = var.project_id
   plan             = var.plan
   metro            = var.metro
   operating_system = var.operating_system
   vlan_count       = var.vlan_count
   metal_vlan_b     = metal_vlan.metro_vlan[*].vxlan
+  ssh_key          = module.ssh.ssh_private_key_contents
   depends_on       = [metal_vlan.metro_vlan]
 }
