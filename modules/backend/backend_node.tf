@@ -36,7 +36,7 @@ data "cloudinit_config" "config" {
 
   part {
     content_type = "text/x-shellscript"
-    content = file("${path.module}/pre-cloud-config.sh")
+    content      = file("${path.module}/pre-cloud-config.sh")
   }
 
   # Main cloud-config configuration file.
@@ -68,8 +68,9 @@ data "cloudinit_config" "config" {
 
 ## Example for executing scripts on backend nodes
 ## Note: The frontend node is used as a bastion_host because the backend nodes do not have public addresses.
-resource "null_resource" "configure-network-backend" {
-  count = var.backend_count
+resource "null_resource" "ssh-after-l2" {
+  count      = var.backend_count
+  depends_on = [metal_port.port]
   connection {
     host        = metal_device.backend[count.index].access_public_ipv4
     type        = "ssh"
@@ -86,29 +87,13 @@ resource "null_resource" "configure-network-backend" {
 }
 
 ## put backend nodes in layer2 bonded mode
-resource "metal_device_network_type" "layer2" {
-  count      = var.backend_count
-  device_id  = metal_device.backend[count.index].id
-  type       = "layer2-bonded"
-  depends_on = [null_resource.configure-network-backend]
-}
+resource "metal_port" "port" {
+  count = var.backend_count
 
-## attach vlans
-resource "metal_port_vlan_attachment" "attach-vlan1-backend" {
-  count      = var.backend_count
-  device_id  = metal_device.backend[count.index].id
-  port_name  = "bond0"
-  vlan_vnid  = var.metal_vlan_b[0]
-  depends_on = [metal_device_network_type.layer2]
-}
-
-resource "metal_port_vlan_attachment" "attach-vlan2-backend" {
-  count      = var.backend_count
-  device_id  = metal_device.backend[count.index].id
-  port_name  = "bond0"
-  vlan_vnid  = var.metal_vlan_b[1]
-  depends_on = [metal_device_network_type.layer2]
-  #depends_on = [metal_port_vlan_attachment.attach-vlan1-backend]
+  port_id  = [for p in metal_device.backend[count.index].ports : p.id if p.name == "bond0"][0]
+  layer2   = true
+  bonded   = true
+  vlan_ids = var.metal_vlan_b
 }
 
 ## the "backend_nodes" is used in main outputs.tf files

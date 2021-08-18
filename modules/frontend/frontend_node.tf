@@ -31,7 +31,6 @@ resource "metal_device" "frontend" {
 ## execute script files in frontend node
 
 resource "null_resource" "configure-network-frontend" {
-  ##count = var.vlan_count
   connection {
     host        = metal_device.frontend.access_public_ipv4
     type        = "ssh"
