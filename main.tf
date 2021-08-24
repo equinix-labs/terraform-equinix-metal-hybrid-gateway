@@ -49,7 +49,7 @@ module "backend" {
   plan             = var.plan
   metro            = var.metro
   operating_system = var.operating_system
-  metal_vlan_b     = [for v in metal_vlan.metro_vlan[*]: { vxlan = v.vxlan, id = v.id }]
+  metal_vlan_b     = [for v in metal_vlan.metro_vlan[*] : { vxlan = v.vxlan, id = v.id }]
   ssh_key          = module.ssh.ssh_private_key_contents
   depends_on       = [metal_vlan.metro_vlan]
 }

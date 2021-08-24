@@ -1,5 +1,7 @@
 # Hybrid-Nodes
-![](https://img.shields.io/badge/Stability-Experimental-red.svg)
+[![Experimental](https://img.shields.io/badge/Stability-Experimental-red.svg)](https://github.com/equinix-labs/standards#about-uniform-standards)
+[![terraform](https://github.com/equinix-labs/terraform-metal-hybrid-gateway/actions/workflows/integration.yaml/badge.svg)](https://github.com/equinix-labs/terraform-metal-hybrid-gateway/actions/workflows/integration.yaml)
+
 
 # Hybrid nodes deployment on Equinix Platform
 
@@ -37,28 +39,23 @@ sudo mv terraform /usr/local/bin/
 To download this project, run the following command:
 
 ```bash
-git clone https://github.com/packet-labs/hybrid-nodes.git
-cd hybrid-nodes
+git clone https://github.com/equinix-labs/terraform-metal-hybrid-gateway.git
+cd terraform-metal-hybrid-gateway
 ```
 
 ## Initialize Terraform
 
-Terraform uses modules to deploy infrastructure. In order to initialize the modules your simply run: `terraform init`. This should download modules into a hidden directory `.terraform`
+Terraform uses modules to deploy infrastructure. In order to initialize the modules you simply run: `terraform init`. This should download modules into a hidden directory `.terraform`
 
 ## Modify your variables
 
-You will need to set the following variables at a minimum and there are a lot more you may wish to modify in `vars.tf`
+See `variables.tf` for a description of each variable. You will need to set the `auth_token` and `project_id` variables at a minimum:
 
 ```
 cp terraform.tfvars.example terraform.tfvars
 vim terraform.tfvars
-auth_token = "your Equinx Metal API token"
-project_id = "your Equinix Metal project you want to deploy the nodes to"
-metro = "Equinx metal metro, for example da (Dallas)
-plan = "Equinx metal sever plan"
-operating_system = "ubuntu_20_04"
-backend_count = number of backend nodes, for example 5
 ```
+
 #### Note - Currently only Ubuntu is supported; Only Gen# 3 server plans support hybrid bonded mode.
 
 ## Deploy terraform template
