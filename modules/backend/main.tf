@@ -11,7 +11,6 @@ variable "backend_count" {}
 variable "plan" {}
 variable "operating_system" {}
 variable "metro" {}
-variable "vlan_count" {}
 variable "metal_vlan_b" {}
 variable "ssh_key" {}
 variable "bastion_host" {}
@@ -39,22 +38,22 @@ data "cloudinit_config" "config" {
     content      = file("${path.module}/pre-cloud-config.sh")
   }
 
+  # part {
+  #   filename     = "network-config"
+  #   content_type = "text/cloud-config"
+  #   content = templatefile("${path.module}/network-config.cfg", {
+  #     VLAN_ID_0  = var.metal_vlan_b[0].vxlan
+  #     VLAN_ID_1  = var.metal_vlan_b[1].vxlan
+  #     LAST_DIGIT = count.index + 2
+  #   })
+  # }
+
   # Main cloud-config configuration file.
   part {
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/cloud-config.cfg", {
-      VLAN_ID_0  = var.metal_vlan_b[0]
-      VLAN_ID_1  = var.metal_vlan_b[1]
-      LAST_DIGIT = count.index + 2
-    })
-  }
-
-  part {
-    filename     = "network-config"
-    content_type = "text/cloud-config"
-    content = templatefile("${path.module}/network-config.cfg", {
-      VLAN_ID_0  = var.metal_vlan_b[0]
-      VLAN_ID_1  = var.metal_vlan_b[1]
+      VLAN_ID_0  = var.metal_vlan_b[0].vxlan
+      VLAN_ID_1  = var.metal_vlan_b[1].vxlan
       LAST_DIGIT = count.index + 2
     })
   }
@@ -93,7 +92,7 @@ resource "metal_port" "port" {
   port_id  = [for p in metal_device.backend[count.index].ports : p.id if p.name == "bond0"][0]
   layer2   = true
   bonded   = true
-  vlan_ids = var.metal_vlan_b
+  vlan_ids = var.metal_vlan_b.*.id
 }
 
 ## the "backend_nodes" is used in main outputs.tf files
