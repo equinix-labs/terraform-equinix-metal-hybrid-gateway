@@ -6,15 +6,6 @@ terraform {
   }
 }
 
-variable "project_id" {}
-variable "backend_count" {}
-variable "plan" {}
-variable "operating_system" {}
-variable "metro" {}
-variable "metal_vlan_b" {}
-variable "ssh_key" {}
-variable "bastion_host" {}
-
 # create backend nodes
 resource "metal_device" "backend" {
   count            = var.backend_count
@@ -37,16 +28,6 @@ data "cloudinit_config" "config" {
     content_type = "text/x-shellscript"
     content      = file("${path.module}/pre-cloud-config.sh")
   }
-
-  # part {
-  #   filename     = "network-config"
-  #   content_type = "text/cloud-config"
-  #   content = templatefile("${path.module}/network-config.cfg", {
-  #     VLAN_ID_0  = var.metal_vlan_b[0].vxlan
-  #     VLAN_ID_1  = var.metal_vlan_b[1].vxlan
-  #     LAST_DIGIT = count.index + 2
-  #   })
-  # }
 
   # Main cloud-config configuration file.
   part {
@@ -95,9 +76,3 @@ resource "metal_port" "port" {
   vlan_ids = var.metal_vlan_b.*.id
 }
 
-## the "backend_nodes" is used in main outputs.tf files
-output "backend_nodes" {
-  value       = metal_device.backend.*.hostname
-  description = "Your backend nodes:"
-}
-## --------------------
