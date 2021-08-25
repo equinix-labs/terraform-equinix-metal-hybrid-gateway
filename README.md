@@ -1,73 +1,87 @@
-## terraform-equinix-template
-
-<!-- TEMPLATE: Review all "TEMPLATE" comments and remove them when applied. -->
-<!-- TEMPLATE: replace "template" with the name of your project. The prefix "terraform-equinix-" informs the Terraform registry that this project is a Terraform module associated with the Equinix provider, Oreserve this prefix.  "terraform-metal-" may also be used for Equinix Metal modules, but "terraform-equinix-" will work too. -->
+# Hybrid-Nodes
 [![Experimental](https://img.shields.io/badge/Stability-Experimental-red.svg)](https://github.com/equinix-labs/standards#about-uniform-standards)
-[![terraform](https://github.com/equinix-labs/terraform-equinix-template/actions/workflows/integration.yaml/badge.svg)](https://github.com/equinix-labs/terraform-equinix-template/actions/workflows/integration.yaml)
+[![terraform](https://github.com/equinix-labs/terraform-metal-hybrid-gateway/actions/workflows/integration.yaml/badge.svg)](https://github.com/equinix-labs/terraform-metal-hybrid-gateway/actions/workflows/integration.yaml)
 
-`terraform-equinix-template` is a minimal Terraform module that utilizes [Terraform providers for Equinix](https://registry.terraform.io/namespaces/equinix) to provision digital infrastructure and demonstrate higher level integrations.
 
-<!-- TEMPLATE: Insert an image here of the infrastructure diagram. You can generate a starting image using instructions found at https://www.terraform.io/docs/cli/commands/graph.html#generating-images -->
+# Hybrid nodes deployment on Equinix Platform
 
-### Usage
+This Terraform script provides hybrid nodes deployments on Equinix Metal platform where one node is deployed as the front-end node in layer-3/layer-2 Hybrid bonded mode and the reset of the nodes are deployed as the backend nodes in layer-2 bonded mode.
 
-This project is experimental and supported by the user community. Equinix does not provide support for this project.
+For information regarding Layer-3/2 hybrid bonded mode, please see the following document - https://metal.equinix.com/developers/docs/layer2-networking/hybrid-bonded-mode/. For the Layer-2 bonded mode, please see the following Equinix Metal document - https://metal.equinix.com/developers/docs/layer2-networking/layer2-mode/#pure-layer-2-modes
 
-Install Terraform using the official guides at <https://learn.hashicorp.com/tutorials/terraform/install-cli>.
+The frontend node can access the internet directly while the backend nodes can only access the internet via frontend. There are two VLANs in this configuration. The first VLAN is shared by the frontend and the backend nodes while the second VLAN is only shared by the backend nodes.
+The first VLAN is hardcoded using 192.168.100.0/24 for IP assignments with frontend being assigned with 192.168.100.1. The second VLAN is hardcoded using 169.254.254.0/24 for IP assigments among the backend nodes.
 
-This project may be forked, cloned, or downloaded and modified as needed as the base in your integrations and deployments.
+After the nodes are sucessfully deployed, the following behaviors are expected:
+1. The frontend node can ping internet, for example, $ping 1.1.1.1
+2. The frontend node can ping the backend node via 192.168.100.x, for example, $ping 192.168.100.2
+3. A backend node can ping internet, for example, $ping 1.1.1.1
+4. A backend node can ping the frontend via 192.168.100.1
+5. A backend node can ping another backend node via 169.254.254.x, for example, $ping 169.254.254.2
 
-This project may also be used as a [Terraform module](https://learn.hashicorp.com/collections/terraform/modules).
+This repository is [Experimental](https://github.com/packethost/standards/blob/master/experimental-statement.md) meaning that it's based on untested ideas or techniques and not yet established or finalized or involves a radically new and innovative style! This means that support is best effort (at best!) and we strongly encourage you to NOT use this in production.
 
-To use this module in a new project, create a file such as:
+## Install Terraform
 
-```hcl
-# main.tf
-terraform {
-  required_providers {
-    equinix = {
-      source = "equinix/equinix"
-    }
-    metal = {
-      source = "equinix/metal"
-    }
-}
+Terraform is just a single binary.  Visit their [download page](https://www.terraform.io/downloads.html), choose your operating system, make the binary executable, and move it into your path.
 
-module "example" {
-  source = "github.com/equinix-labs/template"
-  # TEMPLATE: replace "template" with the name of the repo after the terraform-equinix- or terraform-metal- prefix.
+Here is an example for **macOS**:
 
-  # Published modules can be sourced as:
-  # source = "equinix-labs/template/equinix"
-  # See https://www.terraform.io/docs/registry/modules/publish.html for details.
-
-  # version = "0.1.0"
-
-  # TEMPLATE: insert required variables here
-}
+```bash
+curl -LO https://releases.hashicorp.com/terraform/0.12.18/terraform_0.12.18_darwin_amd64.zip
+unzip terraform_0.12.18_darwin_amd64.zip
+chmod +x terraform
+sudo mv terraform /usr/local/bin/
 ```
 
-Run `terraform init -upgrade` and `terraform apply`.
+## Download this project
 
-<!-- TEMPLATE: Expand this section with any additional information or requirements. -->
+To download this project, run the following command:
 
-#### Variables
+```bash
+git clone https://github.com/equinix-labs/terraform-metal-hybrid-gateway.git
+cd terraform-metal-hybrid-gateway
+```
 
-|     Variable Name      |  Type   |        Default Value        | Description                                             |
-| :--------------------: | :-----: | :-------------------------: | :------------------------------------------------------ |
-|                        |         |                             |                                                         |
+## Initialize Terraform
 
-<!-- TEMPLATE: If published, remove the table and use the following: See <https://registry.terraform.io/modules/equinix-labs/template/equinix/latest?tab=inputs> for a description of all variables. -->
+Terraform uses modules to deploy infrastructure. In order to initialize the modules you simply run: `terraform init`. This should download modules into a hidden directory `.terraform`
 
-#### Outputs
+## Modify your variables
 
-|     Variable Name      |  Type   | Description                                             |
-| :--------------------: | :-----: | :------------------------------------------------------ |
-|                        |         |                                                         |
+See `variables.tf` for a description of each variable. You will need to set the `auth_token` and `project_id` variables at a minimum:
 
-<!-- TEMPLATE: If published, remove the table and use the following: See <https://registry.terraform.io/modules/equinix-labs/template/equinix/latest?tab=outputs> for a description of all outputs. -->
+```
+cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars
+```
 
-### Examples
+#### Note - Currently only Ubuntu is supported; Only Gen# 3 server plans support hybrid bonded mode.
 
-- [examples/simple](examples/simple/)
+## Deploy terraform template
 
+```bash
+terraform apply --auto-approve
+```
+
+Once this is complete you should get output similar to this:
+
+```console
+Apply complete! Resources: 31 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+backend_nodes = [
+  "backend-1",
+  "backend-2",
+  "backend-3",
+  "backend-4",
+  "backend-5",
+]
+frontend_IP = "145.40.80.131"
+frontend_name = "front-end"
+metrovlan_ids = [
+  1002,
+  1003,
+]
+```
