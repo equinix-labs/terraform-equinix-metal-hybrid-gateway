@@ -38,7 +38,7 @@ module "frontend" {
   operating_system = var.operating_system
   metal_vlan_f     = { vxlan = metal_vlan.metro_vlan[0].vxlan, id = metal_vlan.metro_vlan[0].id }
   ssh_key          = module.ssh.ssh_private_key_contents
-  depends_on       = [metal_vlan.metro_vlan]
+  depends_on       = [metal_vlan.metro_vlan, module.ssh]
 }
 
 module "backend" {
@@ -51,5 +51,5 @@ module "backend" {
   operating_system = var.operating_system
   metal_vlan_b     = [for v in metal_vlan.metro_vlan[*] : { vxlan = v.vxlan, id = v.id }]
   ssh_key          = module.ssh.ssh_private_key_contents
-  depends_on       = [metal_vlan.metro_vlan]
+  depends_on       = [metal_vlan.metro_vlan, module.ssh]
 }
