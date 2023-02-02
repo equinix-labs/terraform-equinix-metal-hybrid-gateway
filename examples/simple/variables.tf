@@ -1,6 +1,12 @@
+variable "auth_token" {
+  type        = string
+  description = "Your Equinix Metal API key (https://console.equinix.com/users/-/api-keys)"
+  sensitive   = true
+}
+
 variable "hardware_reservation_ids" {
   type = object({
-    frontend  = optional(string, "")
+    frontend = optional(string, "")
     backends = optional(list(string), [])
   })
   default     = {}

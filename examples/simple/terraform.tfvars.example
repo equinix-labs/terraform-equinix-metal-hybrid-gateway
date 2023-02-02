@@ -1,3 +1,4 @@
+auth_token = "Your Equinix Metal API Token"
 project_id = "Your project ID"
 metro      = "da"
 plan       = "c3.small.x86"

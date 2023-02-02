@@ -1,20 +1,22 @@
 terraform {
   required_providers {
-    metal = {
-      source = "equinix/metal"
+    equinix = {
+      source = "equinix/equinix"
     }
   }
 }
 
 ## create the front-end node
-resource "metal_device" "frontend" {
-  hostname         = "front-end"
-  plan             = var.plan
-  metro            = var.metro
-  operating_system = var.operating_system
-  billing_cycle    = "hourly"
-  project_id       = var.project_id
-  user_data        = data.cloudinit_config.config.rendered
+resource "equinix_metal_device" "frontend" {
+  hostname                         = "front-end"
+  plan                             = var.plan
+  metro                            = var.metro
+  operating_system                 = var.operating_system
+  billing_cycle                    = "hourly"
+  project_id                       = var.project_id
+  user_data                        = data.cloudinit_config.config.rendered
+  hardware_reservation_id          = try(var.hardware_reservation_id, null)
+  wait_for_reservation_deprovision = try(var.hardware_reservation_id ? true : null, null)
 }
 
 data "cloudinit_config" "config" {
@@ -29,8 +31,8 @@ data "cloudinit_config" "config" {
   }
 }
 
-resource "metal_port" "attach-vlan-frontend" {
-  port_id  = [for p in metal_device.frontend.ports : p.id if p.name == "bond0"][0]
+resource "equinix_metal_port" "attach-vlan-frontend" {
+  port_id  = [for p in equinix_metal_device.frontend.ports : p.id if p.name == "bond0"][0]
   layer2   = false
   bonded   = true
   vlan_ids = [var.metal_vlan_f.id]
