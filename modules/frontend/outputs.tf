@@ -4,11 +4,11 @@ output "metrovlan_id_f" {
 
 ## "frontend_name" and "frontend_IP" are used in main outputs file
 output "frontend_name" {
-  value       = metal_device.frontend.hostname
+  value       = equinix_metal_device.frontend.hostname
   description = "Your frondend node's hostname:"
 }
 
 output "frontend_IP" {
-  value       = metal_device.frontend.access_public_ipv4
+  value       = equinix_metal_device.frontend.access_public_ipv4
   description = "Your frondend node's IP:"
 }

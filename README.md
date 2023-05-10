@@ -21,31 +21,30 @@ After the nodes are sucessfully deployed, the following behaviors are expected:
 
 This repository is [Experimental](https://github.com/packethost/standards/blob/master/experimental-statement.md) meaning that it's based on untested ideas or techniques and not yet established or finalized or involves a radically new and innovative style! This means that support is best effort (at best!) and we strongly encourage you to NOT use this in production.
 
-## Install Terraform
-
-Terraform is just a single binary.  Visit their [download page](https://www.terraform.io/downloads.html), choose your operating system, make the binary executable, and move it into your path.
-
-Here is an example for **macOS**:
-
-```bash
-curl -LO https://releases.hashicorp.com/terraform/0.12.18/terraform_0.12.18_darwin_amd64.zip
-unzip terraform_0.12.18_darwin_amd64.zip
-chmod +x terraform
-sudo mv terraform /usr/local/bin/
-```
 
 ## Download this project
 
-To download this project, run the following command:
+To download and start using this project, run the following command:
 
 ```bash
 git clone https://github.com/equinix-labs/terraform-metal-hybrid-gateway.git
 cd terraform-metal-hybrid-gateway
 ```
 
+## Using Terraform Modules
+
+With your [Equinix Metal account, project, and a **User** API token](https://metal.equinix.com/developers/docs/accounts/users/), you can use [Terraform v1+](https://learn.hashicorp.com/tutorials/terraform/install-cli) to install a proof-of-concept demonstration environment for EKS-A on Baremetal.
+
+
 ## Initialize Terraform
 
-Terraform uses modules to deploy infrastructure. In order to initialize the modules you simply run: `terraform init`. This should download modules into a hidden directory `.terraform`
+Enter the `examples/simple` directory. This directory has a configuration that consumes the project as a Terraform module.
+
+```sh
+$ cd examples/simple
+```
+
+Terraform uses modules to deploy infrastructure. In order to initialize the modules you simply run: `terraform init`. This will download providers and modules into a hidden directory `.terraform`
 
 ## Modify your variables
 

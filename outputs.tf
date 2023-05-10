@@ -1,5 +1,5 @@
 output "metrovlan_ids" {
-  value = metal_vlan.metro_vlan[*].vxlan
+  value = equinix_metal_vlan.metro_vlan[*].vxlan
 }
 
 output "frontend_name" {

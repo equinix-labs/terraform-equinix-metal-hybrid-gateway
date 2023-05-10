@@ -6,3 +6,7 @@ variable "metro" {}
 variable "metal_vlan_b" {}
 variable "ssh_key" {}
 variable "bastion_host" {}
+variable "hardware_reservation_ids" {
+  type    = list(string)
+  default = []
+}
