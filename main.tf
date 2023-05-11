@@ -9,9 +9,14 @@ terraform {
     }
     equinix = {
       source  = "equinix/equinix"
-      version = "= 1.11.1"
+      version = "~> 1.14"
     }
   }
+  provider_meta "equinix" {
+    module_name = "equinix-hybrid-gateway"
+  }
+}
+provider "equinix" {
 }
 
 ## allocate metro vlans for the project 
